@@ -7,6 +7,7 @@ import {
   UseGuards,
   Request,
   Param,
+  Get,
 } from '@nestjs/common';
 import { CreateUserDTO } from './dto/create-user.dto';
 import { UserService } from './user.service';
@@ -25,7 +26,7 @@ export class UserController {
   ) {}
 
   @Post('register')
-  async createUser(@Body() user: CreateUserDTO): Promise<any> {
+  async createUser(@Body() user: CreateUserDTO): Promise<{ user: string }> {
     try {
       const newUser = await this.userService.createUser(user);
       return { user: `${newUser.username} created successfully` };
@@ -37,7 +38,9 @@ export class UserController {
 
   @UseGuards(LocalAuthGuard)
   @Post('login')
-  async loginUser(@Request() req): Promise<any> {
+  async loginUser(
+    @Request() req: { user: string },
+  ): Promise<{ access_token: string }> {
     try {
       return this.authService.login(req.user);
     } catch (error) {
@@ -51,10 +54,27 @@ export class UserController {
   async updateUprofile(
     @Body() data: UpdateUserDTO,
     @Param('username') username: string,
-  ) {
+  ): Promise<{ user: string }> {
     try {
       const updatedUser = await this.userService.updateProfile(data, username);
-      return { User: `${updatedUser.username} updated successfully` };
+      return { user: `${updatedUser.username} updated successfully` };
+    } catch (error) {
+      this.log.error(error);
+      throw error;
+    }
+  }
+
+  @Get(':username')
+  async getUserProfile(
+    @Param('username') username: string,
+  ): Promise<{ user: string; createdAt: string; updatedAt: string }> {
+    try {
+      const {
+        username: user,
+        createdAt,
+        updatedAt,
+      } = await this.userService.getUser(username);
+      return { user, createdAt, updatedAt };
     } catch (error) {
       this.log.error(error);
       throw error;
