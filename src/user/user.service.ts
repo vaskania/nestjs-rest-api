@@ -2,6 +2,7 @@ import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { UserRepository } from 'src/db/repository/user.repository';
 import { CreateUserDTO } from './dto/create-user.dto';
 import { HashPassword } from 'src/utils/crypto';
+import { UpdateUserDTO } from './dto/update-user.dto';
 
 @Injectable()
 export class UserService {
@@ -17,12 +18,13 @@ export class UserService {
       throw new HttpException('User already exist', HttpStatus.BAD_REQUEST);
     const { hash, salt } = await this.hashPassword.hashPassword(data.password);
 
-    return this.userRepo.createUser({
-      username: data.username,
-      firstname: data.firstname,
-      lastname: data.lastname,
-      password: hash,
-      salt,
-    });
+    data = { ...data, password: hash, salt };
+
+    return this.userRepo.createUser(data);
+  }
+
+  async updateProfile(data: UpdateUserDTO): Promise<any> {
+    const findUserToUpdate = await this.userRepo.findUser(data.username);
+    console.log(findUserToUpdate);
   }
 }

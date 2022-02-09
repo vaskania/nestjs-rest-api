@@ -1,8 +1,10 @@
-import { Body, Controller, Logger, Post, UseGuards } from '@nestjs/common';
+import { Body, Controller, Logger, Post, Put, UseGuards } from '@nestjs/common';
 import { CreateUserDTO } from './dto/create-user.dto';
 import { UserService } from './user.service';
 import { LoginUserDTO } from './dto/user-login.dto';
 import { LocalAuthGuard } from 'src/auth/guards/local-auth.guard';
+import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
+import { UpdateUserDTO } from './dto/update-user.dto';
 
 @Controller('user')
 export class UserController {
@@ -30,5 +32,14 @@ export class UserController {
       this.log.error(error);
       throw error;
     }
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Put('profile')
+  async updateUprofile(@Body() data: UpdateUserDTO) {
+    console.log('here');
+    try {
+      const updatedUser = await this.userService.updateProfile(data);
+    } catch (error) {}
   }
 }

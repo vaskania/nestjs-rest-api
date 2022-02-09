@@ -6,12 +6,9 @@ import {
   IsOptional,
 } from 'class-validator';
 
-export class CreateUserDTO {
-  @IsNotEmpty()
-  @IsString()
-  @MinLength(3)
-  @MaxLength(100)
-  readonly username: string;
+export class UpdateUserDTO {
+  @IsOptional()
+  username: string;
 
   @IsNotEmpty()
   @IsString()
@@ -30,7 +27,4 @@ export class CreateUserDTO {
   @MinLength(6)
   @MaxLength(100)
   password: string;
-
-  @IsOptional()
-  salt: string;
 }
