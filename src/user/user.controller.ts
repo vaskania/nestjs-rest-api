@@ -24,6 +24,11 @@ export class UserController {
   @UseGuards(LocalAuthGuard)
   @Post('login')
   async loginUser(@Body() user: LoginUserDTO): Promise<any> {
-    return 'logged in';
+    try {
+      return { user: `${user.username} successfully logged in` };
+    } catch (error) {
+      this.log.error(error);
+      throw error;
+    }
   }
 }

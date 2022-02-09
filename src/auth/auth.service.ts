@@ -13,13 +13,10 @@ export class AuthService {
     const user = await this.userRepo.findUser(username);
     if (!user) return null;
 
-    const userMatch = await this.hashPassword.hashPassword(pass);
-    console.log(userMatch);
-    console.log(user);
-    if (user && user.password === pass) {
-      const { password, ...result } = user;
-      console.log(password);
-      return result;
+    const userMatch = await this.hashPassword.hashPassword(pass, user.salt);
+
+    if (userMatch.hash === user.password) {
+      return true;
     }
     return null;
   }
