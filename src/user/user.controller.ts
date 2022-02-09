@@ -6,6 +6,7 @@ import {
   Put,
   UseGuards,
   Request,
+  Param,
 } from '@nestjs/common';
 import { CreateUserDTO } from './dto/create-user.dto';
 import { UserService } from './user.service';
@@ -46,10 +47,14 @@ export class UserController {
   }
 
   @UseGuards(JwtAuthGuard)
-  @Put('profile')
-  async updateUprofile(@Body() data: UpdateUserDTO) {
+  @Put('/update-profile/:username')
+  async updateUprofile(
+    @Body() data: UpdateUserDTO,
+    @Param('username') username: string,
+  ) {
     try {
-      const updatedUser = await this.userService.updateProfile(data);
+      const updatedUser = await this.userService.updateProfile(data, username);
+      console.log(updatedUser);
     } catch (error) {}
   }
 }

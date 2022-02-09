@@ -23,8 +23,9 @@ export class UserService {
     return this.userRepo.createUser(data);
   }
 
-  async updateProfile(data: UpdateUserDTO): Promise<any> {
-    const findUserToUpdate = await this.userRepo.findUser(data.username);
-    console.log(findUserToUpdate);
+  async updateProfile(data: UpdateUserDTO, username: string): Promise<any> {
+    const findUserToUpdate = await this.userRepo.findUser(username);
+    if (findUserToUpdate) await this.userRepo.updateProfile(data);
+    throw new HttpException('User not found', HttpStatus.NOT_FOUND);
   }
 }
