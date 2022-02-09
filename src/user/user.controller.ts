@@ -1,16 +1,27 @@
-import { Body, Controller, Logger, Post, Put, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Logger,
+  Post,
+  Put,
+  UseGuards,
+  Request,
+} from '@nestjs/common';
 import { CreateUserDTO } from './dto/create-user.dto';
 import { UserService } from './user.service';
-import { LoginUserDTO } from './dto/user-login.dto';
 import { LocalAuthGuard } from 'src/auth/guards/local-auth.guard';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { UpdateUserDTO } from './dto/update-user.dto';
+import { AuthService } from 'src/auth/auth.service';
 
 @Controller('user')
 export class UserController {
   private readonly log = new Logger();
 
-  constructor(private readonly userService: UserService) {}
+  constructor(
+    private readonly userService: UserService,
+    private readonly authService: AuthService,
+  ) {}
 
   @Post('register')
   async createUser(@Body() user: CreateUserDTO): Promise<any> {
@@ -25,9 +36,9 @@ export class UserController {
 
   @UseGuards(LocalAuthGuard)
   @Post('login')
-  async loginUser(@Body() user: LoginUserDTO): Promise<any> {
+  async loginUser(@Request() req): Promise<any> {
     try {
-      return { user: `${user.username} successfully logged in` };
+      return this.authService.login(req.user);
     } catch (error) {
       this.log.error(error);
       throw error;
@@ -37,7 +48,6 @@ export class UserController {
   @UseGuards(JwtAuthGuard)
   @Put('profile')
   async updateUprofile(@Body() data: UpdateUserDTO) {
-    console.log('here');
     try {
       const updatedUser = await this.userService.updateProfile(data);
     } catch (error) {}

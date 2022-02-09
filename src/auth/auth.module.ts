@@ -12,9 +12,10 @@ import { JwtStrategy } from './strategy/jwt.strategy';
     CryptoModule,
     JwtModule.register({
       secret: process.env.JWT_SECRET,
-      signOptions: { expiresIn: '360s' },
+      signOptions: { expiresIn: 360 },
     }),
   ],
   providers: [AuthService, LocalStrategy, JwtStrategy],
+  exports: [AuthService],
 })
 export class AuthModule {}
