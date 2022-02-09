@@ -54,7 +54,10 @@ export class UserController {
   ) {
     try {
       const updatedUser = await this.userService.updateProfile(data, username);
-      console.log(updatedUser);
-    } catch (error) {}
+      return { User: `${updatedUser.username} updated successfully` };
+    } catch (error) {
+      this.log.error(error);
+      throw error;
+    }
   }
 }

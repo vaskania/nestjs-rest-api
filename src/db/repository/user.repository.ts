@@ -23,8 +23,8 @@ export class UserRepository {
     return await this.userModel.findById(id);
   }
 
-  async updateProfile(data) {
-    const user = await this.getUserById(data.id);
+  async updateProfile(data, id) {
+    const user = await this.getUserById(id);
     const updatedUser = { ...user };
 
     if (data.firstname) {
@@ -37,7 +37,7 @@ export class UserRepository {
       updatedUser.password = data.password;
     }
     return this.userModel.findByIdAndUpdate(
-      { _id: data.id },
+      { _id: id },
       {
         firstname: updatedUser.firstname,
         lastname: updatedUser.lastname,
