@@ -10,6 +10,8 @@ import {
   Query,
   UseGuards,
   Request,
+  HttpException,
+  HttpStatus,
 } from '@nestjs/common';
 import { CreateUserDTO } from './dto/create-user.dto';
 import { UserService } from './user.service';
@@ -34,7 +36,7 @@ export class UserController {
       return { user: `${newUser.username} created successfully` };
     } catch (error) {
       this.log.error(error);
-      throw error;
+      throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
     }
   }
 
@@ -54,22 +56,15 @@ export class UserController {
   @UseGuards(JwtAuthGuard)
   @Put('/update-profile/:username')
   async updateUprofile(
-    @Body() data: UpdateUserDTO,
+    @Body() data: Partial<UpdateUserDTO>,
     @Param('username') username: string,
   ): Promise<{ user: string }> {
     try {
-      const updatedUser = await this.userService.updateProfile(
-        {
-          firstname: data.firstname,
-          lastname: data.lastname,
-          password: data.password,
-        },
-        username,
-      );
+      const updatedUser = await this.userService.updateProfile(data, username);
       return { user: `${updatedUser.username} updated successfully` };
     } catch (error) {
       this.log.error(error);
-      throw error;
+      throw new HttpException(error.message, HttpStatus.NOT_FOUND);
     }
   }
 
@@ -86,7 +81,7 @@ export class UserController {
       return { user, createdAt, updatedAt };
     } catch (error) {
       this.log.error(error);
-      throw error;
+      throw new HttpException(error.message, HttpStatus.NOT_FOUND);
     }
   }
 
@@ -107,7 +102,7 @@ export class UserController {
       });
     } catch (error) {
       this.log.error(error);
-      throw error;
+      throw new HttpException(error.message, HttpStatus.NOT_FOUND);
     }
   }
 
@@ -121,7 +116,7 @@ export class UserController {
       return { User: `${user.username} deleted successfully` };
     } catch (error) {
       this.log.error(error);
-      throw error;
+      throw new HttpException(error.message, HttpStatus.NOT_FOUND);
     }
   }
 }

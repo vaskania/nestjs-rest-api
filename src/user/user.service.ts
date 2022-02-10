@@ -1,7 +1,8 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { UserRepository } from 'src/db/repository/user.repository';
 import { CreateUserDTO } from './dto/create-user.dto';
 import { HashPassword } from 'src/utils/crypto';
+import { UpdateUserDTO } from './dto/update-user.dto';
 
 @Injectable()
 export class UserService {
@@ -13,37 +14,35 @@ export class UserService {
   async createUser(data: CreateUserDTO): Promise<{ username: string }> {
     const user = data.username;
     const findExistUser = await this.userRepo.findUser(user);
-    if (findExistUser)
-      throw new HttpException('User already exist', HttpStatus.BAD_REQUEST);
-    const { hash, salt } = await this.hashPassword.hashPassword(data.password);
+    if (findExistUser) throw new Error('User already exist');
 
+    const { hash, salt } = await this.hashPassword.hashPassword(data.password);
     const updatedData = { ...data, password: hash, salt };
 
     return this.userRepo.createUser(updatedData);
   }
 
   async updateProfile(
-    data: { firstname: string; lastname: string; password: string },
+    data: Partial<UpdateUserDTO>,
     username: string,
   ): Promise<{ username: string }> {
     const user = await this.userRepo.findUser(username);
     if (user) {
-      let salt: string;
-      if (data.password) {
-        const { hash, salt: newSalt } = await this.hashPassword.hashPassword(
-          data.password,
+      const updatedData = { ...data };
+      if (updatedData.password) {
+        const { hash, salt } = await this.hashPassword.hashPassword(
+          updatedData.password,
         );
-        data.password = hash;
-        salt = newSalt;
+        updatedData.password = hash;
+        updatedData.salt = salt;
       }
       const updatedUser = await this.userRepo.updateProfile(
-        data,
-        salt,
+        updatedData,
         user._id,
       );
       return updatedUser;
     }
-    throw new HttpException('User not found', HttpStatus.NOT_FOUND);
+    throw new Error('User not found');
   }
 
   async getUser(
@@ -51,19 +50,18 @@ export class UserService {
   ): Promise<{ username: string; createdAt: Date; updatedAt: Date }> {
     const user = await this.userRepo.findUser(username);
     if (user) return user;
-    throw new HttpException('User not found', HttpStatus.NOT_FOUND);
+    throw new Error('User not found');
   }
 
   async getUsers(pageNumber: string, limit: string) {
     const usersList = await this.userRepo.getUsers(pageNumber, limit);
-    if (usersList.length === 0)
-      throw new HttpException('User not found', HttpStatus.NOT_FOUND);
+    if (usersList.length === 0) throw new Error('User not found');
     return usersList;
   }
 
   async deleteUser(username: string): Promise<{ username: string }> {
     const user = await this.userRepo.findUser(username);
-    if (!user) throw new HttpException('User not found', HttpStatus.NOT_FOUND);
+    if (!user) throw new Error('User not found');
     return this.userRepo.deleteUserById(user._id);
   }
 }

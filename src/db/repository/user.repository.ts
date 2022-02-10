@@ -2,6 +2,7 @@ import { Model } from 'mongoose';
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { User } from '../interface/user.interface';
+import { UpdateUserDTO } from 'src/user/dto/update-user.dto';
 
 @Injectable()
 export class UserRepository {
@@ -23,36 +24,16 @@ export class UserRepository {
     return await this.userModel.findById(id);
   }
 
-  async updateProfile(
-    data: { firstname: string; lastname: string; password: string },
-    salt: string,
-    id: string,
-  ) {
+  async updateProfile(data: Partial<UpdateUserDTO>, id: string) {
     const user = await this.getUserById(id);
-
-    const updatedUser = { ...user };
-
-    if (data.firstname) {
-      updatedUser.firstname = data.firstname;
-    }
-    if (data.lastname) {
-      updatedUser.lastname = data.lastname;
-    }
-    if (data.password) {
-      updatedUser.password = data.password;
-    }
-    return this.userModel.findByIdAndUpdate(
-      { _id: id },
-      {
-        firstname: updatedUser.firstname,
-        lastname: updatedUser.lastname,
-        password: updatedUser.password,
-        salt,
-      },
-    );
+    const updatedUser = await Object.assign(user, data);
+    return updatedUser.save();
   }
 
-  async getUsers(pageNumber: string, limit: string) {
+  async getUsers(
+    pageNumber: string,
+    limit: string,
+  ): Promise<{ username: string; firstname: string; lastname: string }[]> {
     const users = await this.userModel
       .find({ isDeleted: false })
       .skip(+pageNumber > 0 ? (+pageNumber - 1) * +limit : 0)
