@@ -11,7 +11,7 @@ export class HashPassword {
   async hashPassword(
     password: string,
     salt = randomBytes(16).toString('hex'),
-  ): Promise<any> {
+  ): Promise<{ hash: string; salt: string }> {
     const { iterations, hashBytes, digest } = config;
     const hashPassword = pbkdf2Sync(
       password,

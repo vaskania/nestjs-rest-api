@@ -11,14 +11,16 @@ export class AuthService {
     private readonly jwtService: JwtService,
   ) {}
 
-  async validateUser(username: string, pass: string) {
+  async validateUser(
+    username: string,
+    pass: string,
+  ): Promise<{ username: string; _id: string } | null> {
     const user = await this.userRepo.findUser(username);
     if (!user) return null;
 
     const userMatch = await this.hashPassword.hashPassword(pass, user.salt);
 
     if (userMatch.hash === user.password) return user;
-    console.log(user);
     return null;
   }
 

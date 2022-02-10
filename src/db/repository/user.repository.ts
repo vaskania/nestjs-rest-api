@@ -16,17 +16,34 @@ export class UserRepository {
     return newUser.save();
   }
 
-  async findUser(username: string): Promise<any> {
+  async findUser(username: string): Promise<{
+    username: string;
+    _id: string;
+    createdAt: Date;
+    updatedAt: Date;
+    password: string;
+    salt: string;
+  }> {
     return this.userModel.findOne({ username });
   }
 
-  async getUserById(id: string): Promise<any> {
-    return await this.userModel.findById(id);
+  async getUserById(id: string): Promise<{
+    username: string;
+    _id: string;
+    createdAt: Date;
+    updatedAt: Date;
+    deletedAt: Date;
+    isDeleted: boolean;
+    password: string;
+    salt: string;
+    save: () => { username: string } | PromiseLike<{ username: string }>;
+  }> {
+    return this.userModel.findById(id);
   }
 
   async updateProfile(data: Partial<UpdateUserDTO>, id: string) {
     const user = await this.getUserById(id);
-    const updatedUser = await Object.assign(user, data);
+    const updatedUser = Object.assign(user, data);
     return updatedUser.save();
   }
 
@@ -45,7 +62,6 @@ export class UserRepository {
     const user = await this.getUserById(id);
     user.isDeleted = true;
     user.deletedAt = new Date();
-    user.save();
-    return user;
+    return user.save();
   }
 }

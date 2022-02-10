@@ -53,7 +53,10 @@ export class UserService {
     throw new Error('User not found');
   }
 
-  async getUsers(pageNumber: string, limit: string) {
+  async getUsers(
+    pageNumber: string,
+    limit: string,
+  ): Promise<{ username: string; firstname: string; lastname: string }[]> {
     const usersList = await this.userRepo.getUsers(pageNumber, limit);
     if (usersList.length === 0) throw new Error('User not found');
     return usersList;
