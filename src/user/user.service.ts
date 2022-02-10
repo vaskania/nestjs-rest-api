@@ -2,7 +2,6 @@ import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { UserRepository } from 'src/db/repository/user.repository';
 import { CreateUserDTO } from './dto/create-user.dto';
 import { HashPassword } from 'src/utils/crypto';
-import { UpdateUserDTO } from './dto/update-user.dto';
 
 @Injectable()
 export class UserService {
@@ -11,7 +10,7 @@ export class UserService {
     private readonly hashPassword: HashPassword,
   ) {}
 
-  async createUser(data: CreateUserDTO): Promise<any> {
+  async createUser(data: CreateUserDTO): Promise<{ username: string }> {
     const user = data.username;
     const findExistUser = await this.userRepo.findUser(user);
     if (findExistUser)
@@ -26,7 +25,7 @@ export class UserService {
   async updateProfile(
     data: { firstname: string; lastname: string; password: string },
     username: string,
-  ): Promise<any> {
+  ): Promise<{ username: string }> {
     const user = await this.userRepo.findUser(username);
     if (user) {
       let salt: string;
@@ -47,7 +46,9 @@ export class UserService {
     throw new HttpException('User not found', HttpStatus.NOT_FOUND);
   }
 
-  async getUser(username: string): Promise<any> {
+  async getUser(
+    username: string,
+  ): Promise<{ username: string; createdAt: Date; updatedAt: Date }> {
     const user = await this.userRepo.findUser(username);
     if (user) return user;
     throw new HttpException('User not found', HttpStatus.NOT_FOUND);
@@ -60,7 +61,7 @@ export class UserService {
     return usersList;
   }
 
-  async deleteUser(username: string) {
+  async deleteUser(username: string): Promise<{ username: string }> {
     const user = await this.userRepo.findUser(username);
     if (!user) throw new HttpException('User not found', HttpStatus.NOT_FOUND);
     return this.userRepo.deleteUserById(user._id);

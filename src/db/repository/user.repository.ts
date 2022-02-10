@@ -10,7 +10,7 @@ export class UserRepository {
     private readonly userModel: Model<User>,
   ) {}
 
-  async createUser(user: object): Promise<any> {
+  async createUser(user: object): Promise<{ username: string }> {
     const newUser = new this.userModel(user);
     return newUser.save();
   }
@@ -60,7 +60,7 @@ export class UserRepository {
     return users;
   }
 
-  async deleteUserById(id: string) {
+  async deleteUserById(id: string): Promise<{ username: string }> {
     const user = await this.getUserById(id);
     user.isDeleted = true;
     user.deletedAt = new Date();

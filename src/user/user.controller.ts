@@ -1,15 +1,15 @@
 import {
   Body,
   Controller,
-  Logger,
+  Get,
   Post,
   Put,
+  Delete,
+  Param,
+  Logger,
+  Query,
   UseGuards,
   Request,
-  Param,
-  Get,
-  Query,
-  Delete,
 } from '@nestjs/common';
 import { CreateUserDTO } from './dto/create-user.dto';
 import { UserService } from './user.service';
@@ -41,7 +41,7 @@ export class UserController {
   @UseGuards(LocalAuthGuard)
   @Post('/login')
   async loginUser(
-    @Request() req: { user: string },
+    @Request() req: { user: { username: string; role: string } },
   ): Promise<{ access_token: string }> {
     try {
       return this.authService.login(req.user);
@@ -76,7 +76,7 @@ export class UserController {
   @Get('/:username')
   async getUserProfile(
     @Param('username') username: string,
-  ): Promise<{ user: string; createdAt: string; updatedAt: string }> {
+  ): Promise<{ user: string; createdAt: Date; updatedAt: Date }> {
     try {
       const {
         username: user,
@@ -95,7 +95,7 @@ export class UserController {
     @Query('pageNumber') pageNumber: '0',
     @Query('limit')
     limit: '3',
-  ): Promise<any> {
+  ) {
     try {
       const usersList = await this.userService.getUsers(pageNumber, limit);
       return usersList.map((user) => {
@@ -111,9 +111,11 @@ export class UserController {
     }
   }
 
-  // @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard)
   @Delete(':username')
-  async deleteUserById(@Param('username') username: string) {
+  async deleteUserById(
+    @Param('username') username: string,
+  ): Promise<{ User: string }> {
     try {
       const user = await this.userService.deleteUser(username);
       return { User: `${user.username} deleted successfully` };

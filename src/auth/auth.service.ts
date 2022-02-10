@@ -18,10 +18,14 @@ export class AuthService {
     const userMatch = await this.hashPassword.hashPassword(pass, user.salt);
 
     if (userMatch.hash === user.password) return user;
+    console.log(user);
     return null;
   }
 
-  async login(user: any) {
+  async login(user: {
+    username: string;
+    role: string;
+  }): Promise<{ access_token: string }> {
     const payload = { username: user.username, role: user.role };
     return {
       access_token: this.jwtService.sign(payload),
