@@ -8,6 +8,8 @@ import {
   Request,
   Param,
   Get,
+  Query,
+  Delete,
 } from '@nestjs/common';
 import { CreateUserDTO } from './dto/create-user.dto';
 import { UserService } from './user.service';
@@ -25,7 +27,7 @@ export class UserController {
     private readonly authService: AuthService,
   ) {}
 
-  @Post('register')
+  @Post('/register')
   async createUser(@Body() user: CreateUserDTO): Promise<{ user: string }> {
     try {
       const newUser = await this.userService.createUser(user);
@@ -37,7 +39,7 @@ export class UserController {
   }
 
   @UseGuards(LocalAuthGuard)
-  @Post('login')
+  @Post('/login')
   async loginUser(
     @Request() req: { user: string },
   ): Promise<{ access_token: string }> {
@@ -56,7 +58,14 @@ export class UserController {
     @Param('username') username: string,
   ): Promise<{ user: string }> {
     try {
-      const updatedUser = await this.userService.updateProfile(data, username);
+      const updatedUser = await this.userService.updateProfile(
+        {
+          firstname: data.firstname,
+          lastname: data.lastname,
+          password: data.password,
+        },
+        username,
+      );
       return { user: `${updatedUser.username} updated successfully` };
     } catch (error) {
       this.log.error(error);
@@ -64,7 +73,7 @@ export class UserController {
     }
   }
 
-  @Get(':username')
+  @Get('/:username')
   async getUserProfile(
     @Param('username') username: string,
   ): Promise<{ user: string; createdAt: string; updatedAt: string }> {
@@ -75,6 +84,39 @@ export class UserController {
         updatedAt,
       } = await this.userService.getUser(username);
       return { user, createdAt, updatedAt };
+    } catch (error) {
+      this.log.error(error);
+      throw error;
+    }
+  }
+
+  @Get('/users/list')
+  async getUsersList(
+    @Query('pageNumber') pageNumber: '0',
+    @Query('limit')
+    limit: '3',
+  ): Promise<any> {
+    try {
+      const usersList = await this.userService.getUsers(pageNumber, limit);
+      return usersList.map((user) => {
+        return {
+          username: user.username,
+          firstName: user.firstname,
+          lastName: user.lastname,
+        };
+      });
+    } catch (error) {
+      this.log.error(error);
+      throw error;
+    }
+  }
+
+  // @UseGuards(JwtAuthGuard)
+  @Delete(':username')
+  async deleteUserById(@Param('username') username: string) {
+    try {
+      const user = await this.userService.deleteUser(username);
+      return { User: `${user.username} deleted successfully` };
     } catch (error) {
       this.log.error(error);
       throw error;

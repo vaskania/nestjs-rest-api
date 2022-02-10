@@ -26,5 +26,5 @@ export class UpdateUserDTO {
   @IsString()
   @MinLength(6)
   @MaxLength(100)
-  password: string;
+  readonly password: string;
 }

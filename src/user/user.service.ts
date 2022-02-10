@@ -18,23 +18,51 @@ export class UserService {
       throw new HttpException('User already exist', HttpStatus.BAD_REQUEST);
     const { hash, salt } = await this.hashPassword.hashPassword(data.password);
 
-    data = { ...data, password: hash, salt };
+    const updatedData = { ...data, password: hash, salt };
 
-    return this.userRepo.createUser(data);
+    return this.userRepo.createUser(updatedData);
   }
 
-  async updateProfile(data: UpdateUserDTO, username: string): Promise<any> {
+  async updateProfile(
+    data: { firstname: string; lastname: string; password: string },
+    username: string,
+  ): Promise<any> {
     const user = await this.userRepo.findUser(username);
     if (user) {
-      const updatedUser = await this.userRepo.updateProfile(data, user._id);
+      let salt: string;
+      if (data.password) {
+        const { hash, salt: newSalt } = await this.hashPassword.hashPassword(
+          data.password,
+        );
+        data.password = hash;
+        salt = newSalt;
+      }
+      const updatedUser = await this.userRepo.updateProfile(
+        data,
+        salt,
+        user._id,
+      );
       return updatedUser;
     }
     throw new HttpException('User not found', HttpStatus.NOT_FOUND);
   }
 
-  async getUser(username): Promise<any> {
+  async getUser(username: string): Promise<any> {
     const user = await this.userRepo.findUser(username);
     if (user) return user;
     throw new HttpException('User not found', HttpStatus.NOT_FOUND);
+  }
+
+  async getUsers(pageNumber: string, limit: string) {
+    const usersList = await this.userRepo.getUsers(pageNumber, limit);
+    if (usersList.length === 0)
+      throw new HttpException('User not found', HttpStatus.NOT_FOUND);
+    return usersList;
+  }
+
+  async deleteUser(username: string) {
+    const user = await this.userRepo.findUser(username);
+    if (!user) throw new HttpException('User not found', HttpStatus.NOT_FOUND);
+    return this.userRepo.deleteUserById(user._id);
   }
 }

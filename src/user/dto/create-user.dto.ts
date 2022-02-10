@@ -29,8 +29,5 @@ export class CreateUserDTO {
   @IsString()
   @MinLength(6)
   @MaxLength(100)
-  password: string;
-
-  @IsOptional()
-  salt: string;
+  readonly password: string;
 }
