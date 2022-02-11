@@ -3,7 +3,6 @@ import {
   IsString,
   MaxLength,
   MinLength,
-  IsOptional,
 } from 'class-validator';
 
 export class CreateUserDTO {

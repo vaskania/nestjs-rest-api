@@ -8,12 +8,12 @@ import { JwtStrategy } from './strategy/jwt.strategy';
 
 @Module({
   imports: [
-    DbModule,
-    CryptoModule,
-    JwtModule.register({
-      secret: process.env.JWT_SECRET,
-      signOptions: { expiresIn: 3600 },
-    }),
+	DbModule,
+	CryptoModule,
+	JwtModule.register({
+		secret: process.env.JWT_SECRET,
+		signOptions: { expiresIn: 3600 },
+	}),
   ],
   providers: [AuthService, LocalStrategy, JwtStrategy],
   exports: [AuthService],

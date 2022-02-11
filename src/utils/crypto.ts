@@ -6,23 +6,24 @@ const config = {
   hashBytes: 32,
   digest: 'sha512',
 };
+
 @Injectable()
 export class HashPassword {
   async hashPassword(
-    password: string,
-    salt = randomBytes(16).toString('hex'),
+	password: string,
+	salt = randomBytes(16).toString('hex'),
   ): Promise<{ hash: string; salt: string }> {
-    const { iterations, hashBytes, digest } = config;
-    const hashPassword = pbkdf2Sync(
-      password,
-      salt,
-      iterations,
-      hashBytes,
-      digest,
-    );
-    return {
-      hash: hashPassword.toString('hex'),
-      salt: salt,
-    };
+	const { iterations, hashBytes, digest } = config;
+	const hashPassword = pbkdf2Sync(
+		password,
+		salt,
+		iterations,
+		hashBytes,
+		digest,
+	);
+	return {
+		hash: hashPassword.toString('hex'),
+		salt: salt,
+	};
   }
 }

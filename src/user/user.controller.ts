@@ -27,7 +27,8 @@ export class UserController {
   constructor(
     private readonly userService: UserService,
     private readonly authService: AuthService,
-  ) {}
+  ) {
+  }
 
   @Post('/register')
   async createUser(@Body() user: CreateUserDTO): Promise<{ user: string }> {
@@ -89,7 +90,7 @@ export class UserController {
   async getUsersList(
     @Query('pageNumber') pageNumber: '0',
     @Query('limit')
-    limit: '3',
+      limit: '3',
   ) {
     try {
       const usersList = await this.userService.getUsers(pageNumber, limit);
