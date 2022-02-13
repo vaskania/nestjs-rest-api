@@ -3,7 +3,6 @@ import { UserRepository } from 'src/db/repository/user.repository';
 import { CreateUserDTO } from './dto/create-user.dto';
 import { HashPassword } from 'src/utils/crypto';
 import { UpdateUserDTO } from './dto/update-user.dto';
-import { ResponseObject } from './user.constants';
 
 @Injectable()
 export class UserService {
