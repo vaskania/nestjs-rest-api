@@ -5,7 +5,6 @@ import { AppModule } from '../src/app.module';
 import { CreateUserDTO } from '../src/user/dto/create-user.dto';
 import { disconnect } from 'mongoose';
 import { LoginUserDTO } from '../src/user/dto/user-login.dto';
-import { UpdateUserDTO } from 'src/user/dto/update-user.dto';
 
 const testRegisterDto: CreateUserDTO = {
   username: 'vaskania22',
