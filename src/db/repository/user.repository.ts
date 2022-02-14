@@ -4,6 +4,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { User } from '../interface/user.interface';
 import { UpdateUserDTO } from 'src/user/dto/update-user.dto';
 import { ResponseDeleted, ResponseObject } from 'src/user/user.constants';
+import { CreateUserDTO } from 'src/user/dto/create-user.dto';
 
 @Injectable()
 export class UserRepository {
@@ -12,7 +13,7 @@ export class UserRepository {
     private readonly userModel: Model<User>,
   ) {}
 
-  async createUser(user: object): Promise<{ username: string }> {
+  async createUser(user: CreateUserDTO): Promise<{ username: string }> {
     const newUser = new this.userModel(user);
     return newUser.save();
   }

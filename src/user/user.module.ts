@@ -1,9 +1,9 @@
 import { Module } from '@nestjs/common';
 import { UserService } from './user.service';
 import { UserController } from './user.controller';
-import { DbModule } from 'src/db/db.module';
-import { CryptoModule } from 'src/utils/crypto.module';
-import { AuthModule } from 'src/auth/auth.module';
+import { DbModule } from '../db/db.module';
+import { CryptoModule } from '../utils/crypto.module';
+import { AuthModule } from '../auth/auth.module';
 
 @Module({
   imports: [DbModule, CryptoModule, AuthModule],

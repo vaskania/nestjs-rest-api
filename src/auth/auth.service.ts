@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
-import { UserRepository } from 'src/db/repository/user.repository';
-import { HashPassword } from 'src/utils/crypto';
+import { UserRepository } from '../db/repository/user.repository';
+import { HashPassword } from '../utils/crypto';
 import { JwtService } from '@nestjs/jwt';
 
 @Injectable()
@@ -9,7 +9,8 @@ export class AuthService {
     private userRepo: UserRepository,
     private readonly hashPassword: HashPassword,
     private readonly jwtService: JwtService,
-  ) {}
+  ) {
+  }
 
   async validateUser(
     username: string,

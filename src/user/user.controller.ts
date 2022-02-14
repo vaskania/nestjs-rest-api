@@ -11,14 +11,15 @@ import {
   UseGuards,
   Request,
   HttpException,
+  HttpCode,
   HttpStatus,
 } from '@nestjs/common';
 import { CreateUserDTO } from './dto/create-user.dto';
 import { UserService } from './user.service';
-import { LocalAuthGuard } from 'src/auth/guards/local-auth.guard';
-import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
+import { LocalAuthGuard } from '../auth/guards/local-auth.guard';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { UpdateUserDTO } from './dto/update-user.dto';
-import { AuthService } from 'src/auth/auth.service';
+import { AuthService } from '../auth/auth.service';
 import { UserAlreadyExists, UserNotFoundError } from './user.constants';
 
 @Controller('user')
@@ -34,7 +35,7 @@ export class UserController {
   async createUser(@Body() user: CreateUserDTO): Promise<{ user: string }> {
     try {
       const newUser = await this.userService.createUser(user);
-      return { user: `${newUser.username} created successfully` };
+      return { user: newUser.username };
     } catch (error) {
       this.log.error(UserAlreadyExists);
       throw new HttpException(UserAlreadyExists, HttpStatus.BAD_REQUEST);
@@ -42,6 +43,7 @@ export class UserController {
   }
 
   @UseGuards(LocalAuthGuard)
+  @HttpCode(200)
   @Post('/login')
   async loginUser(
     @Request() req: { user: { username: string; role: string } },
@@ -56,7 +58,7 @@ export class UserController {
 
   @UseGuards(JwtAuthGuard)
   @Put('/update-profile/:username')
-  async updateUprofile(
+  async updatedProfile(
     @Body() data: Partial<UpdateUserDTO>,
     @Param('username') username: string,
   ): Promise<{ user: string }> {

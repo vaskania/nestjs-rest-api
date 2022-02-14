@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
-import { UserRepository } from 'src/db/repository/user.repository';
+import { UserRepository } from '../db/repository/user.repository';
 import { CreateUserDTO } from './dto/create-user.dto';
-import { HashPassword } from 'src/utils/crypto';
+import { HashPassword } from '../utils/crypto';
 import { UpdateUserDTO } from './dto/update-user.dto';
 
 @Injectable()
@@ -9,7 +9,8 @@ export class UserService {
   constructor(
     private readonly userRepo: UserRepository,
     private readonly hashPassword: HashPassword,
-  ) {}
+  ) {
+  }
 
   async createUser(data: CreateUserDTO): Promise<{ username: string }> {
     const user = data.username;
