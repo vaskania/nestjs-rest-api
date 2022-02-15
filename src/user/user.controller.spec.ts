@@ -1,41 +1,57 @@
-import { Test, TestingModule } from '@nestjs/testing';
+import { Test } from '@nestjs/testing';
+import { createMock } from '@golevelup/ts-jest';
 import { CreateUserDTO } from './dto/create-user.dto';
 import { UserController } from './user.controller';
 import { UserService } from './user.service';
 import { AuthService } from '../auth/auth.service';
+import { UpdateUserDTO } from './dto/update-user.dto';
 
-const data = {
+const data: CreateUserDTO = {
   username: 'vaskania',
   firstname: 'vasili',
   lastname: 'nikabadze',
   password: '123456',
 };
 
+const updateData: UpdateUserDTO = {
+  firstname: 'vaska',
+  lastname: 'nikabadze',
+  password: '123456',
+  salt: 'salttohex',
+};
+
 describe('UserController', () => {
   let controller: UserController;
 
   beforeEach(async () => {
-    const fakeUserService: Partial<UserService> = {
-      createUser: (createUserDto: CreateUserDTO) => {
-        return Promise.resolve({ username: createUserDto.username });
-      },
-    };
-
     const fakeAuthService: Partial<AuthService> = {};
 
     const module = await Test.createTestingModule({
       controllers: [UserController],
       providers: [
-        { provide: UserService, useValue: fakeUserService },
-        { provide: AuthService, useValue: fakeAuthService },
+        { provide: UserService, useValue: createMock<UserService>() },
+        { provide: AuthService, useValue: createMock<AuthService>() },
       ],
     }).compile();
 
     controller = module.get<UserController>(UserController);
   });
 
-  it('create new user', async () => {
+  it('Create new user', async () => {
     const userCreated = await controller.createUser(data);
-    expect(userCreated).toBeDefined();
+    expect({ user: userCreated.user }).toBeDefined();
+  });
+
+  it('Find user by username', async () => {
+    const user = await controller.getUserProfile(data.username);
+    expect({ username: user.username }).toBeDefined();
+  });
+
+  it('Update user profile by username', async () => {
+    const userForUpdate = await controller.updatedProfile(
+      updateData,
+      data.username,
+    );
+    expect({ user: userForUpdate.user }).toBeDefined();
   });
 });
