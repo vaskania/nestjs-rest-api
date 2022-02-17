@@ -61,10 +61,10 @@ export class UserController {
   async updatedProfile(
     @Body() data: Partial<UpdateUserDTO>,
     @Param('username') username: string,
-  ): Promise<{ user: string }> {
+  ): Promise<string> {
     try {
-      const updatedUser = await this.userService.updateProfile(data, username);
-      return { user: `${updatedUser.username} updated successfully` };
+      await this.userService.updateProfile(data, username);
+      return 'updated successfully';
     } catch (error) {
       this.log.error(UserNotFoundError);
       throw new HttpException(UserNotFoundError, HttpStatus.NOT_FOUND);

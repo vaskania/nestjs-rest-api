@@ -9,8 +9,7 @@ export class UserService {
   constructor(
     private readonly userRepo: UserRepository,
     private readonly hashPassword: HashPassword,
-  ) {
-  }
+  ) {}
 
   async createUser(data: CreateUserDTO): Promise<{ username: string }> {
     const user = data.username;
@@ -54,7 +53,7 @@ export class UserService {
     limit: string,
   ): Promise<{ username: string; firstname: string; lastname: string }[]> {
     const usersList = await this.userRepo.getUsers(pageNumber, limit);
-    if (usersList.length !== 0) {
+    if (usersList.length === 0) {
       throw new Error('User not found');
     }
     return usersList;
