@@ -19,6 +19,6 @@ export const TestUpdateData = {
   password: '123456',
 };
 
-export const TestUsername = 'vaska';
+export const TestUsername = 'vaskania22';
 export const pageNumber = 0;
 export const limit = 2;
