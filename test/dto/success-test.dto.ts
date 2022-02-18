@@ -14,8 +14,8 @@ export const TestUserLoginDto: LoginUserDTO = {
 };
 
 export const TestUpdateData = {
-  firstname: 'VASKANIA',
-  lastname: 'NIKABADZE',
+  firstname: 'vaska',
+  lastname: 'NIKA',
   password: '123456',
 };
 

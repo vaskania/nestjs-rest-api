@@ -15,6 +15,7 @@ export type TResponseObject = {
   _id: string;
   password: string;
   salt: string;
+  role: string;
 };
 
 export type TResponseDeleted = TResponseObject & {

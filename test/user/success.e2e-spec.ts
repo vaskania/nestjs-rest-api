@@ -29,7 +29,7 @@ describe('Success test for API (e2e)', () => {
       .post('/user/register')
       .send(TestUserRegisterDto)
       .expect(201);
-    expect(res.text).toBeDefined();
+    expect(res.body).toBeDefined();
     expect(res.body).toStrictEqual({
       user: TestUserLoginDto.username,
     });
@@ -40,24 +40,23 @@ describe('Success test for API (e2e)', () => {
       .post('/user/login')
       .send(TestUserLoginDto)
       .expect(200);
-    const accessToken = body.text;
+    const accessToken = body.body;
     expect({ access_token: accessToken }).toBeDefined();
   });
 
   it('/user/:username (GET) ', async () => {
-    const body = await request(app.getHttpServer())
+    const data = await request(app.getHttpServer())
       .get('/user/' + TestUserRegisterDto['username'])
       .expect(200);
-    expect(body.text).toBeDefined();
-    expect(body.text).toHaveProperty('username');
-    expect(body.text['username']).toBe(TestUserRegisterDto['username']);
+    expect(data.body).toBeDefined();
+    expect(data.body.username).toBe(TestUserRegisterDto['username']);
   });
 
   it('/user/list (GET) ', async () => {
-    const body = await request(app.getHttpServer())
+    const data = await request(app.getHttpServer())
       .get(`/user/users/list?pageNumber=${pageNumber}&limit=${limit}`)
       .expect(200);
-    expect(body.text).toBeDefined();
+    expect(data.body).toBeDefined();
   });
 
   it('/user/update-profile/:username (PUT)', async () => {
