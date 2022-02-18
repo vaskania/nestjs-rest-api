@@ -31,7 +31,7 @@ describe('Success test for API (e2e)', () => {
       .expect(201);
     expect(res.body).toBeDefined();
     expect(res.body).toStrictEqual({
-      user: TestUserLoginDto.username,
+      user: TestUserRegisterDto.username,
     });
   });
 

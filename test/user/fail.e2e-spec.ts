@@ -2,17 +2,11 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { INestApplication } from '@nestjs/common';
 import * as request from 'supertest';
 import { AppModule } from '../../src/app.module';
-import {
-  TestUserRegisterDto,
-  TestUserLoginDto,
-  TestUpdateData,
-  TestUsername,
-  pageNumber,
-  limit,
-} from '../dto/success-test.dto';
 import { disconnect } from 'mongoose';
+import { fakeAccessToken, limit, pageNumber, TestUsernameFail, TestUserRegisterFailDto } from '../dto/fail-test.dto';
+import { TestUpdateData, TestUserLoginDto, TestUsername } from '../dto/success-test.dto';
 
-describe('Fail Test for API (e2e)', () => {
+describe('Fail test for API (e2e)', () => {
   let app: INestApplication;
 
   beforeEach(async () => {
@@ -27,35 +21,18 @@ describe('Fail Test for API (e2e)', () => {
   it('/user/register (POST)', async () => {
     const res = await request(app.getHttpServer())
       .post('/user/register')
-      .send(TestUserRegisterDto)
-      .expect(201);
-    expect(res.text).toBeDefined();
-    expect(res.body).toStrictEqual({
-      user: TestUserLoginDto.username,
-    });
-  });
-
-  it('/user/login (POST)', async () => {
-    const body = await request(app.getHttpServer())
-      .post('/user/login')
-      .send(TestUserLoginDto)
-      .expect(200);
-    const accessToken = body.text;
-    expect({ access_token: accessToken }).toBeDefined();
+      .send(TestUserRegisterFailDto)
+      .expect(400);
+    expect(res.body).toBeDefined();
+    expect(res.body).toStrictEqual({ statusCode: 400, message: 'User already exist' });
   });
 
   it('/user/:username (GET) ', async () => {
-    const body = await request(app.getHttpServer())
-      .get('/user/' + TestUserRegisterDto['username'])
-      .expect(200);
-    expect(body.text).toBeDefined();
-  });
-
-  it('/user/list (GET) ', async () => {
-    const body = await request(app.getHttpServer())
-      .get(`/user/users/list?pageNumber=${pageNumber}&limit=${limit}`)
-      .expect(200);
-    expect(body.text).toBeDefined();
+    const data = await request(app.getHttpServer())
+      .get('/user/' + TestUsernameFail['username'])
+      .expect(404);
+    expect(data.body).toBeDefined();
+    expect(data.body.message).toBe('User not found');
   });
 
   it('/user/update-profile/:username (PUT)', async () => {
@@ -65,12 +42,12 @@ describe('Fail Test for API (e2e)', () => {
       .expect(200);
 
     const updatedUser = await request(app.getHttpServer())
-      .put('/user/update-profile/' + TestUsername)
-      .set('Authorization', 'Bearer ' + data.body.access_token)
+      .put('/user/update-profile/' + TestUsernameFail)
+      .set('Authorization', 'Bearer ' + fakeAccessToken)
       .send(TestUpdateData)
-      .expect(200);
+      .expect(401);
     expect(updatedUser).toBeDefined();
-    expect(updatedUser.text).toStrictEqual('updated successfully');
+    expect(updatedUser.body.message).toStrictEqual('Unauthorized');
   });
 
   it('/user/:username (DELETE)', async () => {
@@ -81,9 +58,10 @@ describe('Fail Test for API (e2e)', () => {
 
     const deleteUser = await request(app.getHttpServer())
       .delete('/user/' + TestUsername)
-      .set('Authorization', 'Bearer ' + data.body.access_token)
-      .expect(200);
+      .set('Authorization', 'Bearer ' + fakeAccessToken)
+      .expect(401);
     expect(deleteUser).toBeDefined();
+    expect(deleteUser.body.message).toStrictEqual('Unauthorized');
   });
 
   afterAll(() => {

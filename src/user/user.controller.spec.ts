@@ -1,10 +1,11 @@
-import { Test } from '@nestjs/testing';
+import { Test, TestingModule } from '@nestjs/testing';
 import { createMock } from '@golevelup/ts-jest';
 import { CreateUserDTO } from './dto/create-user.dto';
 import { UserController } from './user.controller';
 import { UserService } from './user.service';
 import { AuthService } from '../auth/auth.service';
 import { UpdateUserDTO } from './dto/update-user.dto';
+import exp from 'constants';
 
 const data: CreateUserDTO = {
   username: 'vaskania',
@@ -22,7 +23,6 @@ const updateData: UpdateUserDTO = {
 
 describe('UserController', () => {
   let controller: UserController;
-
   beforeEach(async () => {
     const fakeAuthService: Partial<AuthService> = {};
 
@@ -52,6 +52,8 @@ describe('UserController', () => {
       updateData,
       data.username,
     );
-    expect({ user: userForUpdate.user }).toBeDefined();
+    expect(userForUpdate).toBeDefined();
+    expect('updated successfully').toStrictEqual(userForUpdate);
   });
 });
+
