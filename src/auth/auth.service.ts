@@ -9,8 +9,7 @@ export class AuthService {
     private userRepo: UserRepository,
     private readonly hashPassword: HashPassword,
     private readonly jwtService: JwtService,
-  ) {
-  }
+  ) {}
 
   async validateUser(
     username: string,
@@ -24,7 +23,7 @@ export class AuthService {
     const userMatch = await this.hashPassword.hashPassword(pass, user.salt);
 
     if (userMatch.hash === user.password) {
-      return user;
+      return { username, _id: user._id };
     }
     return null;
   }

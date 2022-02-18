@@ -21,6 +21,4 @@ const DB = process.env.DB_URI;
   controllers: [UserController],
   providers: [UserService],
 })
-export class AppModule {
-}
-
+export class AppModule {}

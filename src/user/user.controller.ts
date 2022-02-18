@@ -20,7 +20,8 @@ import { LocalAuthGuard } from '../auth/guards/local-auth.guard';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { UpdateUserDTO } from './dto/update-user.dto';
 import { AuthService } from '../auth/auth.service';
-import { UserAlreadyExists, UserNotFoundError } from './user.constants';
+import { UserAlreadyExists, UserNotFoundError } from './const/user.constants';
+import { TUserData } from './types/user-field.type';
 
 @Controller('user')
 export class UserController {
@@ -74,7 +75,7 @@ export class UserController {
   @Get('/:username')
   async getUserProfile(
     @Param('username') username: string,
-  ): Promise<{ username: string; createdAt: Date; updatedAt: Date }> {
+  ): Promise<TUserData> {
     try {
       const user = await this.userService.getUser(username);
       return {

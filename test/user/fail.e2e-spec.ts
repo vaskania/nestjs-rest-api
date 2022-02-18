@@ -12,7 +12,7 @@ import {
 } from '../dto/success-test.dto';
 import { disconnect } from 'mongoose';
 
-describe('Success test for API (e2e)', () => {
+describe('Fail Test for API (e2e)', () => {
   let app: INestApplication;
 
   beforeEach(async () => {
@@ -49,8 +49,6 @@ describe('Success test for API (e2e)', () => {
       .get('/user/' + TestUserRegisterDto['username'])
       .expect(200);
     expect(body.text).toBeDefined();
-    expect(body.text).toHaveProperty('username');
-    expect(body.text['username']).toBe(TestUserRegisterDto['username']);
   });
 
   it('/user/list (GET) ', async () => {
