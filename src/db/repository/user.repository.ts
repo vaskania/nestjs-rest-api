@@ -15,11 +15,12 @@ export class UserRepository {
   constructor(
     @InjectModel('user')
     private readonly userModel: Model<User>,
-  ) {}
+  ) {
+  }
 
-  async createUser(user: CreateUserDTO): Promise<TNameOnlyUser> {
+  async createUser(user: CreateUserDTO): Promise<void> {
     const newUser = new this.userModel(user);
-    return newUser.save();
+    await newUser.save();
   }
 
   async findUser(username: string): Promise<TResponseObject> {

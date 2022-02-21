@@ -34,10 +34,12 @@ export class UserController {
   }
 
   @Post('/register')
-  async createUser(@Body() user: CreateUserDTO): Promise<{ user: string }> {
+  async createUser(@Body() user: CreateUserDTO): Promise<{ message: string }> {
     try {
-      const newUser = await this.userService.createUser(user);
-      return { user: newUser.username };
+      await this.userService.createUser(user);
+      return {
+        message: `${user} created successfully`,
+      };
     } catch (error) {
       this.log.error(UserAlreadyExists);
       throw new HttpException(UserAlreadyExists, HttpStatus.BAD_REQUEST);

@@ -1,9 +1,9 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { INestApplication } from '@nestjs/common';
+import { INestApplication, ValidationPipe } from '@nestjs/common';
 import * as request from 'supertest';
 import { AppModule } from '../../src/app.module';
 import { disconnect } from 'mongoose';
-import { fakeAccessToken, limit, pageNumber, TestUsernameFail, TestUserRegisterFailDto } from '../dto/fail-test.dto';
+import { fakeAccessToken, TestUsernameFail, TestUserRegisterFailDto } from '../dto/fail-test.dto';
 import { TestUpdateData, TestUserLoginDto, TestUsername } from '../dto/success-test.dto';
 
 describe('Fail test for API (e2e)', () => {
@@ -15,6 +15,7 @@ describe('Fail test for API (e2e)', () => {
     }).compile();
 
     app = moduleFixture.createNestApplication();
+    app.useGlobalPipes(new ValidationPipe())
     await app.init();
   });
 
@@ -29,7 +30,7 @@ describe('Fail test for API (e2e)', () => {
 
   it('/user/:username (GET) ', async () => {
     const data = await request(app.getHttpServer())
-      .get('/user/' + TestUsernameFail['username'])
+      .get('/user/' + TestUsernameFail)
       .expect(404);
     expect(data.body).toBeDefined();
     expect(data.body.message).toBe('User not found');

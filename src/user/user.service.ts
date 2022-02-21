@@ -10,9 +10,10 @@ export class UserService {
   constructor(
     private readonly userRepo: UserRepository,
     private readonly hashPassword: HashPassword,
-  ) {}
+  ) {
+  }
 
-  async createUser(data: CreateUserDTO): Promise<TNameOnlyUser> {
+  async createUser(data: CreateUserDTO): Promise<void> {
     const user = data.username;
     const findExistUser = await this.userRepo.findUser(user);
     if (!findExistUser) {
@@ -21,7 +22,7 @@ export class UserService {
       );
       const updatedData = { ...data, password: hash, salt };
 
-      return this.userRepo.createUser(updatedData);
+      await this.userRepo.createUser(updatedData);
     }
   }
 

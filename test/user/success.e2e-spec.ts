@@ -1,5 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { INestApplication } from '@nestjs/common';
+import { INestApplication, ValidationPipe } from '@nestjs/common';
 import * as request from 'supertest';
 import { AppModule } from '../../src/app.module';
 import {
@@ -21,6 +21,7 @@ describe('Success test for API (e2e)', () => {
     }).compile();
 
     app = moduleFixture.createNestApplication();
+    app.useGlobalPipes(new ValidationPipe());
     await app.init();
   });
 
@@ -46,10 +47,10 @@ describe('Success test for API (e2e)', () => {
 
   it('/user/:username (GET) ', async () => {
     const data = await request(app.getHttpServer())
-      .get('/user/' + TestUserRegisterDto['username'])
+      .get('/user/' + TestUserRegisterDto.username)
       .expect(200);
     expect(data.body).toBeDefined();
-    expect(data.body.username).toBe(TestUserRegisterDto['username']);
+    expect(data.body.username).toBe(TestUserRegisterDto.username);
   });
 
   it('/user/list (GET) ', async () => {
