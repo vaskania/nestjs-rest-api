@@ -32,7 +32,7 @@ describe('Success test for API (e2e)', () => {
       .expect(201);
     expect(res.body).toBeDefined();
     expect(res.body).toStrictEqual({
-      user: TestUserRegisterDto.username,
+      message: `${TestUserRegisterDto.username} created successfully`,
     });
   });
 

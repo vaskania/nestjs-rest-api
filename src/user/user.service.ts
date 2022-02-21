@@ -16,6 +16,7 @@ export class UserService {
   async createUser(data: CreateUserDTO): Promise<void> {
     const user = data.username;
     const findExistUser = await this.userRepo.findUser(user);
+    if (findExistUser) throw  new Error();
     if (!findExistUser) {
       const { hash, salt } = await this.hashPassword.hashPassword(
         data.password,
@@ -24,6 +25,7 @@ export class UserService {
 
       await this.userRepo.createUser(updatedData);
     }
+    console.log(findExistUser);
   }
 
   async updateProfile(

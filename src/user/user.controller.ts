@@ -38,7 +38,7 @@ export class UserController {
     try {
       await this.userService.createUser(user);
       return {
-        message: `${user} created successfully`,
+        message: `${user.username} created successfully`,
       };
     } catch (error) {
       this.log.error(UserAlreadyExists);

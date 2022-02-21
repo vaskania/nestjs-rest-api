@@ -15,7 +15,7 @@ describe('Fail test for API (e2e)', () => {
     }).compile();
 
     app = moduleFixture.createNestApplication();
-    app.useGlobalPipes(new ValidationPipe())
+    app.useGlobalPipes(new ValidationPipe());
     await app.init();
   });
 
@@ -25,7 +25,11 @@ describe('Fail test for API (e2e)', () => {
       .send(TestUserRegisterFailDto)
       .expect(400);
     expect(res.body).toBeDefined();
-    expect(res.body).toStrictEqual({ statusCode: 400, message: 'User already exist' });
+    expect(res.body).toStrictEqual({
+      statusCode: 400,
+      message: ['password must be longer than or equal to 6 characters'],
+      error: 'Bad Request',
+    });
   });
 
   it('/user/:username (GET) ', async () => {
