@@ -1,4 +1,3 @@
-import { Test, TestingModule } from '@nestjs/testing';
 import { AuthService } from '../auth/auth.service';
 import { HashPassword } from './crypto';
 import { LoginUserDTO } from '../user/dto/user-login.dto';
@@ -16,13 +15,7 @@ describe('AuthService', () => {
   let hashPassword: HashPassword;
 
   beforeEach(async () => {
-    const module: TestingModule = await Test.createTestingModule({
-      providers: [
-        HashPassword,
-      ],
-    }).compile();
-
-    hashPassword = module.get<HashPassword>(HashPassword);
+    hashPassword = new HashPassword();
   });
 
   it('Hash Password', async () => {

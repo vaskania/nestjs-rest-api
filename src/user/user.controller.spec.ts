@@ -1,4 +1,3 @@
-import { Test } from '@nestjs/testing';
 import { createMock } from '@golevelup/ts-jest';
 import { CreateUserDTO } from './dto/create-user.dto';
 import { UserController } from './user.controller';
@@ -25,16 +24,7 @@ describe('UserController', () => {
   let controller: UserController;
 
   beforeEach(async () => {
-
-    const module = await Test.createTestingModule({
-      controllers: [UserController],
-      providers: [
-        { provide: UserService, useValue: createMock<UserService>() },
-        { provide: AuthService, useValue: createMock<AuthService>() },
-      ],
-    }).compile();
-
-    controller = module.get<UserController>(UserController);
+    controller = new UserController(createMock<UserService>(), createMock<AuthService>());
   });
 
   it('Create new user', async () => {
