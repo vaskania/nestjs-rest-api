@@ -3,6 +3,7 @@ import { UserRepository } from '../db/repository/user.repository';
 import { CreateUserDTO } from './dto/create-user.dto';
 import { HashPassword } from '../utils/crypto';
 import { UpdateUserDTO } from './dto/update-user.dto';
+import { TUserData, TNameOnlyUser } from './types/user-field.type';
 
 @Injectable()
 export class UserService {
@@ -12,23 +13,25 @@ export class UserService {
   ) {
   }
 
-  async createUser(data: CreateUserDTO): Promise<{ username: string }> {
+  async createUser(data: CreateUserDTO): Promise<void> {
     const user = data.username;
     const findExistUser = await this.userRepo.findUser(user);
+    if (findExistUser) throw  new Error();
     if (!findExistUser) {
       const { hash, salt } = await this.hashPassword.hashPassword(
         data.password,
       );
       const updatedData = { ...data, password: hash, salt };
 
-      return this.userRepo.createUser(updatedData);
+      await this.userRepo.createUser(updatedData);
     }
+    console.log(findExistUser);
   }
 
   async updateProfile(
     data: Partial<UpdateUserDTO>,
     username: string,
-  ): Promise<{ username: string }> {
+  ): Promise<void> {
     const user = await this.userRepo.findUser(username);
     if (user) {
       const updatedData = { ...data };
@@ -39,13 +42,11 @@ export class UserService {
         updatedData.password = hash;
         updatedData.salt = salt;
       }
-      return this.userRepo.updateProfile(updatedData, user._id);
+      await this.userRepo.updateProfile(updatedData, user._id);
     }
   }
 
-  async getUser(
-    username: string,
-  ): Promise<{ username: string; createdAt: Date; updatedAt: Date } | null> {
+  async getUser(username: string): Promise<TUserData | null> {
     return this.userRepo.findUser(username);
   }
 
@@ -54,13 +55,13 @@ export class UserService {
     limit: string,
   ): Promise<{ username: string; firstname: string; lastname: string }[]> {
     const usersList = await this.userRepo.getUsers(pageNumber, limit);
-    if (usersList.length !== 0) {
+    if (usersList.length === 0) {
       throw new Error('User not found');
     }
     return usersList;
   }
 
-  async deleteUser(username: string): Promise<{ username: string }> {
+  async deleteUser(username: string): Promise<TNameOnlyUser> {
     const user = await this.userRepo.findUser(username);
     if (user) return this.userRepo.deleteUserById(user._id);
   }

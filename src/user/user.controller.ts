@@ -20,7 +20,8 @@ import { LocalAuthGuard } from '../auth/guards/local-auth.guard';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { UpdateUserDTO } from './dto/update-user.dto';
 import { AuthService } from '../auth/auth.service';
-import { UserAlreadyExists, UserNotFoundError } from './user.constants';
+import { UserAlreadyExists, UserNotFoundError } from './const/user.constants';
+import { TUserData } from './types/user-field.type';
 
 @Controller('user')
 export class UserController {
@@ -29,13 +30,16 @@ export class UserController {
   constructor(
     private readonly userService: UserService,
     private readonly authService: AuthService,
-  ) {}
+  ) {
+  }
 
   @Post('/register')
-  async createUser(@Body() user: CreateUserDTO): Promise<{ user: string }> {
+  async createUser(@Body() user: CreateUserDTO): Promise<{ message: string }> {
     try {
-      const newUser = await this.userService.createUser(user);
-      return { user: newUser.username };
+      await this.userService.createUser(user);
+      return {
+        message: `${user.username} created successfully`,
+      };
     } catch (error) {
       this.log.error(UserAlreadyExists);
       throw new HttpException(UserAlreadyExists, HttpStatus.BAD_REQUEST);
@@ -61,10 +65,10 @@ export class UserController {
   async updatedProfile(
     @Body() data: Partial<UpdateUserDTO>,
     @Param('username') username: string,
-  ): Promise<{ user: string }> {
+  ): Promise<string> {
     try {
-      const updatedUser = await this.userService.updateProfile(data, username);
-      return { user: `${updatedUser.username} updated successfully` };
+      await this.userService.updateProfile(data, username);
+      return 'updated successfully';
     } catch (error) {
       this.log.error(UserNotFoundError);
       throw new HttpException(UserNotFoundError, HttpStatus.NOT_FOUND);
@@ -74,7 +78,7 @@ export class UserController {
   @Get('/:username')
   async getUserProfile(
     @Param('username') username: string,
-  ): Promise<{ username: string; createdAt: Date; updatedAt: Date }> {
+  ): Promise<TUserData> {
     try {
       const user = await this.userService.getUser(username);
       return {
@@ -92,7 +96,7 @@ export class UserController {
   async getUsersList(
     @Query('pageNumber') pageNumber: '0',
     @Query('limit')
-    limit: '3',
+      limit: '3',
   ) {
     try {
       const usersList = await this.userService.getUsers(pageNumber, limit);
